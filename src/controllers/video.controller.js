@@ -99,7 +99,7 @@ const deleteVideo = asyncHandler(async(req,res) => {
         throw new ApiError(400,"video file not found")
     }
 
-    // ⭐ SECURITY CHECK: Yahaan code add karein
+    //  SECURITY CHECK: Yahaan code add karein
     if (video.owner.toString() !== req.user?._id?.toString()) {
         throw new ApiError(403, "Aap sirf apni hi videos delete kar sakte hain.");
     }
@@ -160,8 +160,104 @@ const deleteVideo = asyncHandler(async(req,res) => {
 
 })
 
+const updateVideoDetails = asyncHandler(async(req,res) => {
+    const {title,description} = req.body
+
+    if(!title && !description){
+        throw new ApiError(400,"for update -> title or description atleast one field is required")
+    }
+
+    const {videoId} = req.params
+
+    const video =  await Video.findById(videoId)
+    if(!video){
+        throw new ApiError(400,"video file not found")
+    }
+
+    //  SECURITY CHECK: Yahaan code add karein
+    if (video.owner.toString() !== req.user?._id?.toString()) {
+        throw new ApiError(403, "Aap sirf apni hi videos update kar sakte hain.");
+    }
+
+    const updateVideo = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            $set:{
+                title,
+                description
+            }
+        },
+        {new: true}
+    )
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200,updateVideo,"video updated successfully"))
+
+})
+
+const updatethumbnail = asyncHandler(async(req,res) => {
+    const {videoId} = req.params
+    if(!videoId){
+        throw new ApiError(400,"videoId not found")
+    }
+
+    const video =  await Video.findById(videoId)
+    if(!video){
+        throw new ApiError(400,"video  not found")
+    }
+
+    if (video.owner.toString() !== req.user?._id?.toString()) {
+        throw new ApiError(403, "Aap sirf apni hi videos update kar sakte hain.");
+    }
+
+    const thumbnail_id = video.thumbnailPublicId
+
+    const new_thumbnail = req.file?.path
+    if (!new_thumbnail) {
+        throw new ApiError(400, " new_thumbnail file is missing")
+    }
+
+    try {
+    // Thumbnail file delete
+        await cloudinary.uploader.destroy(thumbnail_id, { resource_type: "image" });
+
+    } catch (error) {
+        // Cloudinary API failure server side error hai, isliye 500 throw karo
+        console.error("Cloudinary Deletion Error:", error);
+        throw new ApiError(500, "Cloud service se files delete karne mein fail hua.");
+    }
+
+    const thumbnail_toupload  = await uploadOnCloudinary(new_thumbnail)
+    if(!thumbnail_toupload){
+        throw new ApiError(400,"thumbnail_toupload  not found")
+    }
+
+
+    const updatedvideo = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            $set:{
+                thumbnail: thumbnail_toupload.url 
+            }
+        },
+        {new: true}
+    )
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,updatedvideo,"video thubnail upload successfully")
+    )
+
+
+})
+
+
+
 
 export {
     uploadVideo,
     deleteVideo,
+    updateVideoDetails,
+    updatethumbnail
 }
