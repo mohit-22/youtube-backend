@@ -224,8 +224,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const changeCurrentPassword = asyncHandler(async(req, res) => {
     const {oldPassword, newPassword} = req.body
 
-    
-
     const user = await User.findById(req.user?._id)
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
@@ -278,6 +276,22 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
         throw new ApiError(400, "Avatar file is missing")
     }
     //TODO: delete old image - assignment
+    // 1️⃣ Find the existing user
+    // const user = await User.findById(req.user?._id);
+    // if (!user) {
+    //     throw new ApiError(404, "User not found");
+    // }
+
+    // // 2️⃣ Delete old image from Cloudinary (if exists)
+    // if (user.avatar) {
+    //     try {
+    //         // extract public_id from the old image URL
+    //         const oldImagePublicId = user.avatar.split("/").pop().split(".")[0];
+    //         await cloudinary.uploader.destroy(oldImagePublicId);
+    //     } catch (err) {
+    //         console.error("Failed to delete old avatar from Cloudinary:", err.message);
+    //     }
+    // }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
