@@ -52,9 +52,49 @@ const deleteTweet = asyncHandler(async(req,res) => {
     )
 })
 
+const editTweet = asyncHandler(async(req,res) => {
+    const {tweetId} = req.params
+    if(!tweetId){
+        throw new ApiError(400,"tweetId not found for delete")
+    }
+
+    const tweet = await Tweet.findById(tweetId)
+    if(!tweet){
+        throw new ApiError(400,"tweet not found for delete")
+    }
+
+    if (tweet.owner.toString() !== req.user?._id?.toString()) {
+        throw new ApiError(403, "Aap sirf apni hi tweet update kar sakte hain.");
+    }
+
+    const { content } = req.body
+    if(!content){
+        throw new ApiError(400,"newComment not found ")
+    }
+
+    const updatedTweet = await Tweet.findByIdAndUpdate(
+        tweetId,
+        {
+            $set:{
+                content,
+            }
+        },
+        {new: true}
+
+    )
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,updatedTweet,"tweet updatd successfully")
+    )
+
+
+})
 
 
 export {
     postTweet,
-    deleteTweet
+    deleteTweet,
+    editTweet
 }

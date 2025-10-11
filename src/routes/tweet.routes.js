@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
-import { deleteTweet, postTweet } from "../controllers/tweet.controller.js";
+import { deleteTweet, editTweet, postTweet } from "../controllers/tweet.controller.js";
 
 const router = Router()
 
@@ -12,5 +12,11 @@ router.route("/deleteTweet/:tweetId").delete(
     verifyJWT,
     deleteTweet
 )
+
+router.route("/updateTweet/:tweetId").patch(
+    verifyJWT,
+    editTweet
+)
+
 
 export default router
