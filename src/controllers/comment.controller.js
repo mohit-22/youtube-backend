@@ -50,6 +50,9 @@ const deleteComment = asyncHandler(async (req, res) => {
     }
 
     const comment = await Comment.findById(commentId)
+    if(!comment){
+        throw new ApiError(400,"comment not found for delete")
+    }
 
     //  SECURITY CHECK: 
     if (comment.owner.toString() !== req.user?._id?.toString()) {
@@ -69,7 +72,48 @@ const deleteComment = asyncHandler(async (req, res) => {
     )
 })
 
+const editComment = asyncHandler(async(req,res) => {
+    const {commentId} = req.params
+    if(!commentId){
+        throw new ApiError(400,"commentId not found for delete")
+    }
+
+    const comment = await Comment.findById(commentId)
+    if(!comment){
+        throw new ApiError(400,"comment not found for delete")
+    }
+
+    if (comment.owner.toString() !== req.user?._id?.toString()) {
+        throw new ApiError(403, "Aap sirf apni hi comment delete kar sakte hain.");
+    }
+
+    const { newComment } = req.body
+    if(!newComment){
+        throw new ApiError(400,"newComment not found ")
+    }
+
+    const updatedComment = await Comment.findByIdAndUpdate(
+        commentId,
+        {
+            $set:{
+                content: newComment
+            }
+        },
+        {new: true}
+
+    )
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,updatedComment,"comment updatd successfully")
+    )
+
+
+})
+
 export { 
     addComment,
-    deleteComment
+    deleteComment,
+    editComment
  }
