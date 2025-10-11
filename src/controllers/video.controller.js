@@ -99,7 +99,7 @@ const deleteVideo = asyncHandler(async(req,res) => {
         throw new ApiError(400,"video file not found")
     }
 
-    //  SECURITY CHECK: Yahaan code add karein
+    //  SECURITY CHECK: 
     if (video.owner.toString() !== req.user?._id?.toString()) {
         throw new ApiError(403, "Aap sirf apni hi videos delete kar sakte hain.");
     }
@@ -174,7 +174,7 @@ const updateVideoDetails = asyncHandler(async(req,res) => {
         throw new ApiError(400,"video file not found")
     }
 
-    //  SECURITY CHECK: Yahaan code add karein
+    //  SECURITY CHECK: 
     if (video.owner.toString() !== req.user?._id?.toString()) {
         throw new ApiError(403, "Aap sirf apni hi videos update kar sakte hain.");
     }

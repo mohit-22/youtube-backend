@@ -1,45 +1,3 @@
-// import { Comment } from "../models/comment.model.js";
-// import { ApiError } from "../utils/ApiError.js";
-// import { asyncHandler } from "../utils/asyncHandler.js";
-// import { Video } from "../models/video.model.js";
-
-// const addComment = asyncHandler(async(req,res) => {
-//     const {content} = req.body
-//     if(!content || content.trim() === ""){
-//         throw new ApiError(400,"comment not found")
-//     }
-
-//     const { videoId } = req.params
-//     if(!videoId){
-//         throw new ApiError(400,"video not found during comment")
-//     }
-
-//     // Optional but recommended: Check if the video exists
-//     const video = await Video.findById(videoId)
-//     if(!video){
-//         throw new ApiError(400,"video not found during comment")
-//     }
-
-//     const comment = await Comment.create({
-//         content:comment_text,
-//         video:videoId,
-//         owner:req.user?._id,
-//     })
-
-//     if(!comment){
-//         throw new ApiError(500,"comment is not created in db")
-//     }
-
-//     return res
-//     .status(200)
-//     .json(new ApiResponse(200,comment,"comment added successfully"))
-
-// })
-
-// export {addComment}
-
-
-
 import mongoose from "mongoose";
 import { Comment } from "../models/comment.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -49,9 +7,6 @@ import { Video } from "../models/video.model.js";
 
 const addComment = asyncHandler(async (req, res) => {
     // 1. Get content from the request body
-    // The original code was: const comment_text = req.body
-    // This was incorrect because req.body is an object: { "content": "..." }
-    // We need to destructure the 'content' property from the body.
     const { content } = req.body;
 
     // 2. Validate that content exists and is not empty
@@ -83,12 +38,38 @@ const addComment = asyncHandler(async (req, res) => {
     }
 
     // 5. Send a successful response
-    // The original code had incorrect syntax: .status.json(200, comment, "...")
-    // The correct syntax is .status(code).json(payload)
-    // Using 201 "Created" is more appropriate here.
     return res
         .status(201)
         .json(new ApiResponse(201, comment, "Comment created successfully"));
 });
 
-export { addComment };
+const deleteComment = asyncHandler(async (req, res) => {
+    const { commentId } = req.params
+    if(!commentId){
+        throw new ApiError(400,"commentId not found for delete")
+    }
+
+    const comment = await Comment.findById(commentId)
+
+    //  SECURITY CHECK: 
+    if (comment.owner.toString() !== req.user?._id?.toString()) {
+        throw new ApiError(403, "Aap sirf apni hi comment delete kar sakte hain.");
+    }
+
+    try{
+        await Comment.findByIdAndDelete(commentId)
+    }catch{
+        throw new ApiError(400,"unable to delete comment")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, {} , "comment delete successfully")
+    )
+})
+
+export { 
+    addComment,
+    deleteComment
+ }
