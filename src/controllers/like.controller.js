@@ -2,67 +2,152 @@ import { Like } from "../models/like.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
+import { Tweet } from "../models/tweet.model.js";
+import { Video } from "../models/video.model.js";
+import { Comment } from "../models/comment.model.js";
 
-
-const likeTweet = asyncHandler(async(req,res) => {
+const tooglelikeTweet = asyncHandler(async(req,res) => {
     const {tweetId} = req.params
-    if(!tweetId ){
-            throw new ApiError(400," tweetId not found for like")
+
+    if (!mongoose.Types.ObjectId.isValid(tweetId)) {
+        throw new ApiError(400, "Invalid tweetId format.");
     }
-    const liketweet = await Like.create({
+
+    const tweet = await Tweet.findById(tweetId)
+    if(!tweet){
+        throw new ApiError(404,"Tweet not found")
+    }
+    
+
+    const user = req.user?._id
+
+    const likeCondition = {
         tweet:tweetId,
-        likedBy: req.user?._id
-    })
+        likedBy: user
+    }
 
-    return res
-    .status(201)
-    .json(
-        new ApiResponse(201,liketweet,"tweet like  successfully")
-    )
+    const existingLike = await Like.findOne(likeCondition)
+
+    let isLiked
+    let operation
+    if(!existingLike){
+        const Likecreate = await Like.create(likeCondition)
+        if(!Likecreate){
+            throw new ApiError(400,"like nhi hua")
+        }
+        isLiked=true
+        operation="like successfull"
+    }
+    else{
+        const likeDelete = await Like.findByIdAndDelete(existingLike._id)
+        if(!likeDelete){
+            throw new ApiError(400,"unlike nhi hua")
+        }
+        isLiked=false
+        operation="unlike successfull"
+    }
+
+    return res.status(200)
+    .json(new ApiResponse(200,{isLiked,tweetId},operation))
 
 })
 
-const likeVideo = asyncHandler(async(req,res) => {
+const tooglelikeVideo = asyncHandler(async(req,res) => {
     const {videoId} = req.params
-    if(!videoId ){
-            throw new ApiError(400," VideoId not found for like")
+
+    if (!mongoose.Types.ObjectId.isValid(videoId)) {
+        throw new ApiError(400, "Invalid videoId format.");
     }
 
+    const video = await Video.findById(videoId)
+    if(!video){
+        throw new ApiError(404,"Video not found")
+    }
+    
 
-    const likevideo = await Like.create({
+    const user = req.user?._id
+
+    const likeCondition = {
         video:videoId,
-        likedBy: req.user?._id
-    })
+        likedBy: user
+    }
 
-    return res
-    .status(201)
-    .json(
-        new ApiResponse(201,likevideo,"video like  successfully")
-    )
+    const existingLike = await Like.findOne(likeCondition)
+
+    let isLiked
+    let operation
+    if(!existingLike){
+        const Likecreate = await Like.create(likeCondition)
+        if(!Likecreate){
+            throw new ApiError(400,"like nhi hua")
+        }
+        isLiked=true
+        operation="like successfull"
+    }
+    else{
+        const likeDelete = await Like.findByIdAndDelete(existingLike._id)
+        if(!likeDelete){
+            throw new ApiError(400,"unlike nhi hua")
+        }
+        isLiked=false
+        operation="unlike successfull"
+    }
+
+    return res.status(200)
+    .json(new ApiResponse(200,{isLiked,videoId},operation))
 
 })
 
-const likeComment = asyncHandler(async(req,res) => {
+const tooglelikeComment = asyncHandler(async(req,res) => {
+
     const {commentId} = req.params
-    if(!commentId ){
-            throw new ApiError(400," commentId not found for like")
+
+    if (!mongoose.Types.ObjectId.isValid(commentId)) {
+        throw new ApiError(400, "Invalid commentId format.");
     }
 
-    const likeComment = await Like.create({
-        comment:commentId,
-        likedBy: req.user?._id
-    })
+    const comment = await Comment.findById(commentId)
+    if(!comment){
+        throw new ApiError(404,"Comment not found")
+    }
+    
 
-    return res
-    .status(201)
-    .json(
-        new ApiResponse(201,likeComment,"comment like  successfully")
-    )
+    const user = req.user?._id
+
+    const likeCondition = {
+        comment:commentId,
+        likedBy: user
+    }
+
+    const existingLike = await Like.findOne(likeCondition)
+
+    let isLiked
+    let operation
+    if(!existingLike){
+        const Likecreate =  await Like.create(likeCondition)
+        if(!Likecreate){
+            throw new ApiError(400,"like nhi hua")
+        }
+        isLiked=true
+        operation="like successfull"
+    }
+    else{
+        const likeDelete = await Like.findByIdAndDelete(existingLike._id)
+        if(!likeDelete){
+            throw new ApiError(400,"unlike nhi hua")
+        }
+        isLiked=false
+        operation="unlike successfull"
+    }
+
+    return res.status(200)
+    .json(new ApiResponse(200,{isLiked,commentId},operation))
 
 })
 
 export {
-    likeComment,
-    likeTweet,
-    likeVideo
+    tooglelikeComment,
+    tooglelikeTweet,
+    tooglelikeVideo
 }
