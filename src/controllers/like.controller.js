@@ -34,7 +34,7 @@ const tooglelikeTweet = asyncHandler(async(req,res) => {
     if(!existingLike){
         const Likecreate = await Like.create(likeCondition)
         if(!Likecreate){
-            throw new ApiError(400,"like nhi hua")
+            throw new ApiError(400,"like failed")
         }
         isLiked=true
         operation="like successfull"
@@ -42,7 +42,7 @@ const tooglelikeTweet = asyncHandler(async(req,res) => {
     else{
         const likeDelete = await Like.findByIdAndDelete(existingLike._id)
         if(!likeDelete){
-            throw new ApiError(400,"unlike nhi hua")
+            throw new ApiError(400,"unlike failed")
         }
         isLiked=false
         operation="unlike successfull"
@@ -226,7 +226,7 @@ const getvideoLike = asyncHandler(async(req,res) => {
 //                 localField: "_id",
 //                 foreignField: "tweet",
 //                 as:"likesDetails",
-//                
+               
 //             }
 //         },
 //         {
