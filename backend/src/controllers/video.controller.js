@@ -321,21 +321,14 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 // ... [Existing controller functions like uploadVideo, deleteVideo, etc.]
 
+
+
+
+
 export {
     uploadVideo,
     deleteVideo,
     updateVideoDetails,
     updatethumbnail,
-    // --- Export the new controller ---
-    getAllVideos 
-}
-
-
-
-
-export {
-    uploadVideo,
-    deleteVideo,
-    updateVideoDetails,
-    updatethumbnail
+    getAllVideos
 }
