@@ -4,6 +4,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Video } from "../models/video.model.js";
 import { v2 as cloudinary } from 'cloudinary'; 
+import mongoose from "mongoose";
 
 const uploadVideo = asyncHandler(async (req, res) => {
 	const videoFileLocalPath  = req.files?.videoFile?.[0]?.path;
