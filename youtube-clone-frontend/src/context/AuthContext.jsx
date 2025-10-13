@@ -25,10 +25,19 @@ export const AuthProvider = ({ children }) => {
             const currentUser = await fetchFromAPI('users/current-user', 'GET');
             setUser(currentUser);
         } catch (error) {
-            // Agar token invalid/expired hai, toh backend error dega.
-            // Hum user ko null set kar denge.
+            // 1. Check if the error is due to expected lack of authorization (401)
+            // fetchFromAPI throws an error whose message contains the status or reason.
+            const isUnauthorized = error.message.includes('401') || error.message.includes('Unauthorized request'); 
+            
             setUser(null);
-            console.log("No active session found.");
+            
+            if (!isUnauthorized) {
+                 // 2. Log only unexpected errors (e.g., 500 server error, network failure)
+                 console.error("Unexpected user check error:", error.message);
+            } else {
+                 // 3. For expected 401 error (logged out state), simply log to confirm.
+                 console.log("No active session found.");
+            }
         } finally {
             setIsLoading(false);
         }

@@ -37,6 +37,12 @@ export const fetchFromAPI = async (url, method = 'GET', data = null) => {
             method,
             data,
             headers,
+            // Only include the Content-Type header if it's NOT FormData
+            // headers: data instanceof FormData ? {} : { 'Content-Type': 'application/json' },
+            // Alternative fix if the above fails
+            headers: data instanceof FormData ? { 'Content-Type': undefined } : { 'Content-Type': 'application/json' },
+            // Ensure withCredentials is maintained in the api instance (which it is)
+
         });
 
         // Backend se humein { data, message, statusCode, success } milta hai

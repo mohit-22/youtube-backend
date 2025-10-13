@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button, TextField, Container } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Login = () => {
     const { login, isAuthenticated, isLoading } = useAuth();
