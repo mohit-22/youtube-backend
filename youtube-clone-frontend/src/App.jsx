@@ -1,16 +1,16 @@
-// src/App.jsx
+// src/App.jsx (Final Updated File)
 
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
 
-// 1. Context ko import karein
+// 1. Context
 import { AuthProvider } from './context/AuthContext'; 
 
-// 2. Components ko import karein
+// 2. Components
 import Navbar from './components/Navbar'; 
 
-// 3. Saare Pages ko import karein (Ab tak ke saare features)
+// 3. Saare Pages (Including History)
 import Home from './pages/Home';
 import VideoDetail from './pages/VideoDetail';
 import ChannelDetail from './pages/ChannelDetail';
@@ -18,8 +18,9 @@ import SearchFeed from './pages/SearchFeed';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Upload from './pages/Upload';
-import Settings from './pages/Settings';           // Step 13
-import ChangePassword from './pages/ChangePassword'; // New: Step 14 ka page
+import Settings from './pages/Settings';           
+import ChangePassword from './pages/ChangePassword';
+import History from './pages/History';             // FINAL ADDITION
 
 const App = () => (
   <BrowserRouter>
@@ -36,8 +37,9 @@ const App = () => (
           
           {/* --- User Management & Creator Routes --- */}
           <Route path="/upload" element={<Upload />} />
-          <Route path="/settings" element={<Settings />} /> // Account Details, Avatar, Cover
-          <Route path="/change-password" element={<ChangePassword />} /> // New Route
+          <Route path="/settings" element={<Settings />} /> 
+          <Route path="/change-password" element={<ChangePassword />} /> 
+          <Route path="/history" element={<History />} />             {/* FINAL FEATURE ROUTE */}
           
           {/* --- Authentication Routes --- */}
           <Route path="/login" element={<Login />} />
